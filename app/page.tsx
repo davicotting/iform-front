@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  const { forms, loading } = useFetchFormsUseCase();
+  const { forms, loading} = useFetchFormsUseCase();
 
   function hanleGoToCreateQuestions(FormId: string) {
     router.push(`/create/questions/${FormId}`);
@@ -44,7 +44,7 @@ export default function Home() {
         </Link>
 
         {forms.map((form) => (
-          <Card className="w-full h-max shadow-none " key={form.id}>
+          <Card className="w-full h-max shadow-none" key={form.id}>
             <CardHeader>
               <div>
                 <Badge>
@@ -66,7 +66,9 @@ export default function Home() {
               >
                 Criar campos
               </Button>
-              <Button>Link do fomulário</Button>
+              <Link href={`/create/answer/link/${form.id}`}>
+              <Button>Linkar perguntas e respostas</Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
