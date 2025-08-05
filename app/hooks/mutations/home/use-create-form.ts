@@ -1,6 +1,7 @@
 import { db } from "@/app/lib/firebase";
 import { MutationOptions } from "@/app/types/mutation-types";
-import { useMutation } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/react-query/query-keys";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addDoc, collection } from "firebase/firestore";
 
 interface FormProps {
@@ -9,6 +10,8 @@ interface FormProps {
 }
 
 export function useCreateForm(options?: MutationOptions<void>) {
+  const queryClient = useQueryClient();
+
   async function handleCreateForm({ description, title }: FormProps) {
     await addDoc(collection(db, "formularios"), {
       description,
@@ -23,6 +26,9 @@ export function useCreateForm(options?: MutationOptions<void>) {
       if (options?.onSuccess) {
         options.onSuccess();
       }
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.fetchFormsKey],
+      });
     },
     onError: (error) => {
       if (options?.onError) {

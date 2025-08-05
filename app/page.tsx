@@ -14,13 +14,11 @@ import {
 import { ListOrdered, PlusSquare } from "lucide-react";
 import Link from "next/link";
 
-import { useForms } from "./hooks/use-formularios";
+import { useFetchFormsUseCase } from "./hooks/use-cases/use-fetch-forms-use-case";
 import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
-  const { forms } = useForms();
-
-  
+  const { forms, loading } = useFetchFormsUseCase();
 
   return (
     <section className="h-screen w-full flex  flex-col">
