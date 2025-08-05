@@ -11,13 +11,13 @@ import {
 export interface Form {
   id: string;
   title: string;
-  descricao: string;
-  ordem: number;
+  description: string;
+  order: number;
 }
 
 export function useFetchForms() {
   async function fetchForms(): Promise<Form[]> {
-    const formQuery = query(collection(db, "formularios"), orderBy("ordem"));
+    const formQuery = query(collection(db, "formularios"), orderBy("order"));
     const snapshot = await getDocs(formQuery);
 
     return snapshot.docs.map((doc) => ({
