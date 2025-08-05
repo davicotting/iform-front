@@ -17,6 +17,7 @@ export function useCreateForm(options?: MutationOptions<void>) {
       description,
       title,
       ordem: Math.floor(Math.random() * 1000),
+      id: crypto.randomUUID()
     });
   }
 
