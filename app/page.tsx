@@ -16,9 +16,15 @@ import Link from "next/link";
 
 import { useFetchFormsUseCase } from "./hooks/use-cases/use-fetch-forms-use-case";
 import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const { forms, loading } = useFetchFormsUseCase();
+
+  function hanleGoToCreateQuestions(FormId: string) {
+    router.push(`/create/questions/${FormId}`);
+  }
 
   return (
     <section className="h-screen w-full flex  flex-col">
@@ -43,18 +49,23 @@ export default function Home() {
               <div>
                 <Badge>
                   <ListOrdered />
-                  {form.ordem}
+                  {form.order}
                 </Badge>
               </div>
               <CardTitle className="text-xl">{form.title}</CardTitle>
               <CardDescription className="truncate">
-                {form.descricao}
+                {form.description}
               </CardDescription>
               <CardAction></CardAction>
             </CardHeader>
 
             <CardFooter className="mt-2.5 flex w-full justify-end gap-2">
-              <Button variant={"secondary"}>Criar campos</Button>
+              <Button
+                variant={"secondary"}
+                onClick={() => hanleGoToCreateQuestions(form.id)}
+              >
+                Criar campos
+              </Button>
               <Button>Link do fomulário</Button>
             </CardFooter>
           </Card>
