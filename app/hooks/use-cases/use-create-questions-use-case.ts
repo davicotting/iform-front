@@ -1,3 +1,4 @@
+'use client'
 import * as zod from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,6 +6,7 @@ import { useCreateQuestions } from "../mutations/create/use-create-questions";
 import { toast } from "sonner";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/app/lib/firebase";
+import { useState } from "react";
 
 enum QuestionType {
   YES_OR_NO = "Sim_Não",
@@ -22,6 +24,12 @@ interface useCreateQuestionsUseCaseProps {
 export function useCreateQuestionsUseCase({
   idForm,
 }: useCreateQuestionsUseCaseProps) {
+  const [isCreating, setIsCreating] = useState(false);
+
+  function handleUserInitQuestionCreation() {
+    setIsCreating(true);
+  }
+
   const formSchema = zod.object({
     title: zod
       .string()
@@ -31,12 +39,12 @@ export function useCreateQuestionsUseCase({
       .string()
       .min(10, "A descrição deve ter no mínimo 10 caracteres.")
       .max(500, "A descrição deve ter no máximo 500 caracteres."),
-    isRequired: zod.boolean(),
-    questionType: zod.enum(QuestionType),
+    isRequired: zod.boolean("Este campo é obrigatório."),
+    questionType: zod.enum(QuestionType, "O campo é obrigatório."),
     subQuestion: zod.boolean(),
     code: zod
       .string()
-      .min(3, "O código deve ter no mínimo 3 caracteres.")
+      .min(1, "O código deve ter no mínimo 1 caracteres.")
       .max(50, "O código deve ter no máximo 50 caracteres.")
       .regex(/^[A-Z0-9_]+$/, "Use letras maiúsculas, números e underscores."),
   });
@@ -48,15 +56,20 @@ export function useCreateQuestionsUseCase({
     handleSubmit,
     reset,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitted },
   } = useForm<schemaType>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      isRequired: false,
+      subQuestion: false,
+    },
   });
 
   const { create, isLoading } = useCreateQuestions({
     onSuccess: () => {
       reset();
       toast.success("Pergunta criado com sucesso!");
+      setIsCreating(false)
     },
     onError: () => {
       toast.error("Erro ao criar pergunta.");
@@ -107,6 +120,9 @@ export function useCreateQuestionsUseCase({
     register,
     errors,
     isLoading,
-    control
+    control,
+    isSubmitted,
+    isCreating,
+    handleUserInitQuestionCreation
   };
 }

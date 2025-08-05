@@ -1,5 +1,5 @@
 import { db } from "@/app/lib/firebase";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   addDoc,
   collection,
@@ -9,6 +9,7 @@ import {
   where,
 } from "firebase/firestore";
 import { MutationOptions } from "@/app/types/mutation-types";
+import { queryKeys } from "@/lib/react-query/query-keys";
 enum QuestionType {
   YES_OR_NO = "Sim_Não",
   MULTIPLE_CHOICE = "multipla_escolha",
@@ -68,16 +69,22 @@ export function useCreateQuestions(options?: MutationOptions<void>) {
     });
   }
 
+  const queryClient = useQueryClient();
+
   const { mutate, isPending } = useMutation({
     mutationFn: handleCreateForm,
     onSuccess: () => {
       if (options?.onSuccess) {
         options.onSuccess();
+        queryClient.invalidateQueries({
+          queryKey: [queryKeys.fetchQuestionsKey],
+        });
       }
     },
-    onError: () => {
+    onError: (error) => {
       if (options?.onError) {
         options.onError(options.errorMessage || "Ocorreu um erro.");
+        console.error(error);
       }
     },
   });
